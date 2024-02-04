@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLASK</title>
+</head>
+<style>
+    .nav_but{
+        background-color : #FF6868;
+        height : 50px;
+        width : 100px;
+        margin-left : 50px;
+        border-radius : 20px;
+        transition : all 0.5s;
+        font-size : 15px;
+        font-weight : bold;
+    }
+
+    .nav_but:hover{
+        width : 130px;
+        background-color : #720455;
+        color : white;
+    }
+
+    .card {
+        border : 5px solid white;
+        transition : 0.3s;
+        width : 800px;
+        border-radius : 10px;
+    }
+
+    .card:hover, .card:active {
+        box-shadow: 10px 10px 5px red;
+    }
+
+    .container {
+        padding: 2px 16px;
+    }
+    #page-container {
+        width : 850px;
+    }
+</style>
+<body style="background-color : #080202;" id="body">
+
+
+    <div id="fix_div" style="display : flex; z-index : 1; background-color : #080202;">
+        <img src="static/images/astronaut.gif" style="height : 900px; width : 100%;">
+    </div>
+    <div style="position : Absolute; top : 10px; width : 100%;">
+        <center>
+            <p style="color : white; font-size : 80px; font-family : 'Rockwell'; margin-bottom : 0px; margin-top : 50px;">Hello World</p>
+            <p style="color : #FF6868; font-size : 30px; font-family : 'Rockwell'; margin-top : 0px;">Blog Like a Hero...</p>
+        </center>
+    </div>
+
+        <div style="position : sticky; top : 0px; background-color : #080202; z-index : 1;">
+        <ul style="display : flex; padding : 10px; width : 100%;" >
+            <a href="#b10" ><button style="" class="nav_but">BLOGS</button></a>
+            <a href="/login"  ><button style="" class="nav_but">LOGIN</button></a>
+            <a href="/register" ><button style="" class="nav_but">REGISTER</button></a>
+            <a href="/logout" ><button style="" class="nav_but">LOGOUT</button></a>
+            <a href="#" ><button style="" class="nav_but">CONTACT</button></a>
+
+            <a href="/user">
+                    {% if "accid" in session:%}
+                    <div style="display : inline-flex;">
+                        <button class="nav_but" style="border-radius : 100%; width : 50px; height : 50px; margin-left : 150px; font-size : 20px;">👤</button>
+                        <p style="color : white">--{{name}}</p>
+                    </div>
+
+                    {% endif %}
+            </a>
+
+            <div id="messege" style="display : inline-flex; background-color : #FF6868; margin-left : 40px; border-radius : 20px;">
+                <b><p style="color : black; margin-left : 10px; font-size : 15px;" id="mes">{{mes}}</p></b>
+                <button onclick="toggle()" style="margin-left : 100px;">X</button>
+            </div>
+        </ul>
+        </div>
+
+
+
+    <br>
+    <br>
+    <div id="page-container">
+    {% for i in blogs %}
+         <div class="card" style="margin-left : 50px;" id="{{i[0]}}">
+             <img src="static/images/bunny.png" alt="Avatr" height="60" width="60">
+             <div class="container" style="color : white; position : relative; bottom : 70px; left : 60px;">
+                 <h4><b>{{i[2]}}</b></h4>
+                 <div style="word-wrap: break-word; position : relative; top : 15px; right : 50px;">
+                     <p>{{i[3]}}</p>
+                 </div>
+                 <h5 style="position : relative; top : 15px; right : 50px;"><b>{{i[1]}}</b></h5>
+                 <h5 id="post_id" hidden> {{ post_idd }}</h5>
+                 <div style="display : inline-flex; position : relative;margin : 0px; top : 35px;">
+                     <h5 style="font-size : 30px; margin: 0px;">{{i[4]}}</h5>
+                 </div>
+                 <form action="{{url_for('home')}}" method="post" id="likeForm">
+                     <button name="id" value="{{i[0]}}" type="submit" style="font-size : 30px; margin-left : 80%; color : black; background-color : red; border-radius : 50%; box-shadow: 0px 0px 40px white;">❤</button>
+                 </form>
+
+             </div>
+         </div>
+    <br>
+    {% endfor %}
+        <center>
+            <div class="pagination" style="margin-left : 50px;">
+            <button id="prevPage" onclick="changePage(-1)" style="width : 50px; height : 50px; background-color : red; border-radius : 50%;">◀</button>
+            <span id="currentPage" style="color : white;">1</span>
+            <button id="nextPage" onclick="changePage(1)" style="width : 50px; height : 50px; background-color : red; border-radius : 50%;">▶</button>
+            </div>
+        </center>
+    </div>
+
+
+
+    <script>
+        function toggle(){
+            x=document.getElementById("messege")
+            x.style.display="none";
+        }
+
+        function modal(){
+            x1=document.getElementById("modal")
+            x2=document.getElementById("blogs")
+            if(x1.style.display == "none"){
+                x1.style.display = "inline-block";
+                x2.style.display = "hidden";
+            }else{
+                x1.style.display = "none";
+                x2.style.display = "inline-table";
+            }
+        }
+
+        // JavaScript for pagination
+        var currentPage = 1;
+        var cardsPerPage = 5;
+        var cards = document.querySelectorAll('.card');
+
+        function showPage(page) {
+            var start = (page - 1) * cardsPerPage;
+            var end = start + cardsPerPage;
+
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].style.display = 'none';
+            }
+
+            for (var i = start; i < end; i++) {
+                if (cards[i]) {
+                    cards[i].style.display = 'block';
+                }
+            }
+
+            document.getElementById('currentPage').innerText = page;
+        }
+
+        function changePage(offset) {
+            currentPage += offset;
+
+            if (currentPage < 1) {
+                currentPage = 1;
+            } else if (currentPage > Math.ceil(cards.length / cardsPerPage)) {
+                currentPage = Math.ceil(cards.length / cardsPerPage);
+            }
+
+            showPage(currentPage);
+        }
+
+        // Show the initial page
+        showPage(currentPage);
+
+        function scrollToSection(sectionId) {
+            var element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+            console.log(sectionId)
+        }
+
+
+        let a = document.getElementById('mes').innerHTML
+        let b = document.getElementById('post_id').innerHTML
+        let st=b.toString()
+        if(a=='liked' || a=='unlike' || a=='login to like'){
+           scrollToSection(parseInt(st))   //
+           console.log(a)
+           console.log(b)
+        }
+
+
+    </script>
+</body>
+</html>
