@@ -15,7 +15,7 @@ app.secret_key = "FOB"
 @app.route('/',methods=['POST','GET'])
 def home():
     global mess,name,p_id
-    conn = sqlite3.connect('python/data.db')
+    conn = sqlite3.connect('data.db')
     cur = conn.cursor()
     cur.execute("select post_no,name,title,content,lik from blog")
     blogs= cur.fetchall()
